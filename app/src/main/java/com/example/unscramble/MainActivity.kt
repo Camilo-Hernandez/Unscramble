@@ -19,11 +19,15 @@ package com.example.unscramble
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.unscramble.ui.GameScreen
+import com.example.unscramble.ui.GameViewModel
 import com.example.unscramble.ui.theme.UnscrambleTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +40,21 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GameScreen()
+                    val gameViewModel : GameViewModel by viewModels()
+                    val gameUiState by gameViewModel.uiState.collectAsState()
+                    val userGuess = gameViewModel.userGuess
+                    val updateUserGuess = { _userGuess: String -> gameViewModel.updateUserGuess(_userGuess) }
+                    val checkUserGuess = { gameViewModel.checkUserGuess() }
+                    val skipWord = { gameViewModel.skipWord() }
+                    val resetGame = gameViewModel::resetGame
+                    GameScreen(
+                        gameUiState = gameUiState,
+                        userGuess = userGuess,
+                        updateUserGuess = updateUserGuess,
+                        checkUserGuess = checkUserGuess,
+                        skipWord = skipWord,
+                        resetGame = resetGame
+                    )
                 }
             }
         }
